@@ -11,7 +11,7 @@ namespace FunctionApp.SentinelLogging
         private readonly ILogAnalyticsService _logAnalyticsService = logAnalyticsService;
 
         [Function(nameof(LogEvents))]
-        public IActionResult Run([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
+        public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
         {
             string hostName = req.HttpContext.Request.Host.Host;
             string hostIp = req.HttpContext.Connection.LocalIpAddress?.ToString() ?? "Unknown";
@@ -26,7 +26,7 @@ namespace FunctionApp.SentinelLogging
 
             _logAnalyticsService.Initialize(hostIp, port, requestMethod, protocol, hostName, requestUri, sourceIp, userAgent);
 
-            _logAnalyticsService.LogEvent(SeverityLevel.Information, "EventName", "Description");
+            await _logAnalyticsService.LogEventAsync(SeverityLevel.Information, "EventName", "Description");
 
             return new NoContentResult();
         }

@@ -8,7 +8,9 @@ var builder = FunctionsApplication.CreateBuilder(args);
 
 builder.ConfigureFunctionsWebApplication();
 
-builder.Services.AddSingleton<ILogAnalyticsService, LogAnalyticsService>();
+builder.Services.AddSingleton<ILogAnalyticsService, LogAnalyticsService>()
+                .AddSingleton<IAuthService, AuthService>()
+                .AddSingleton<IHttpService, HttpService>();
 // Application Insights isn't enabled by default. See https://aka.ms/AAt8mw4.
 //     .AddApplicationInsightsTelemetryWorkerService()
 //     .ConfigureFunctionsApplicationInsights();

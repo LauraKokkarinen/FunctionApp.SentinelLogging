@@ -4,7 +4,7 @@
     "appid": "00000000-0000-0000-0000-000000000000",
     "region": "West Europe",
     "geo": "Europe",
-    "level": 1,
+    "level": "Information",
     "event": "AUTHN_login_success:00000000-0000-0000-0000-000000000000",
     "description": "User 00000000-0000-0000-0000-000000000000 logged in successfully.",
     "host_ip": "127.0.0.1",
