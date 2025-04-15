@@ -1,0 +1,19 @@
+[
+  {
+    "timestamp": "2025-01-01T01:01:01.0000000Z",
+    "appid": "00000000-0000-0000-0000-000000000000",
+    "region": "West Europe",
+    "geo": "Europe",
+    "level": 1,
+    "event": "AUTHN_login_success:00000000-0000-0000-0000-000000000000",
+    "description": "User 00000000-0000-0000-0000-000000000000 logged in successfully.",
+    "host_ip": "127.0.0.1",
+    "port": 1234,
+    "request_method": "POST",
+    "protocol": "https",
+    "hostname": "azure.functions.com",
+    "request_uri": "/api/LogEvent",
+    "source_ip": "127.0.0.1",
+    "useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+  }
+]
