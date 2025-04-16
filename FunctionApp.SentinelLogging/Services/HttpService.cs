@@ -15,18 +15,19 @@ namespace FunctionApp.SentinelLogging.Services
             _httpClient = new HttpClient();
         }
 
-        public async Task<JsonElement?> GetResponseAsync(string url, Method method, HttpRequestHeaders? headers = null, string? body = null, string? contentType = null)
+        public async Task<T?> GetResponseAsync<T>(string url, Method method, HttpRequestHeaders? headers = null, string? body = null, string? contentType = null)
         {
             var request = new HttpRequestMessage(new HttpMethod(method.ToString()), url);
 
             if (headers != null)
+            {
                 foreach (var header in headers)
+                {
                     request.Headers.Add(header.Key, header.Value);
+                }
+            }
 
-            request.Content = body != null ? new StringContent(body, Encoding.UTF8) : null;
-
-            if (request.Content != null)
-                request.Content.Headers.ContentType = MediaTypeHeaderValue.Parse(contentType ?? "application/json");
+            request.Content = body != null ? new StringContent(body, Encoding.UTF8, contentType ?? "application/json") : null;
 
             var response = _httpClient.SendAsync(request).Result;
 
@@ -44,36 +45,57 @@ namespace FunctionApp.SentinelLogging.Services
                         Thread.Sleep(milliseconds);
                     }
 
-                    return await GetResponseAsync(url, method, headers, body, contentType); //retry
+                    return await GetResponseAsync<T>(url, method, headers, body, contentType); //retry
                 }
             }
 
-            var responseBody = await ReadResponseBody(response);
+            if (request.Headers.FirstOrDefault(header => header.Key == "Accept").Value?.Contains("image/jpg") == true)
+            {
+                var result = (T?)(object?)response?.Content.ReadAsByteArrayAsync().Result;
+                return result;
+            }
+
+            var responseBody = await ReadResponseBody<T>(response);
 
             if (response?.IsSuccessStatusCode == true)
-                return (response?.StatusCode == HttpStatusCode.Accepted && response.Headers.Location != null) ? GetResponseHeaders(response) : responseBody;
-
-            return (response?.StatusCode == HttpStatusCode.Conflict && response.Headers.Location != null) ? GetResponseHeaders(response) : throw new Exception(responseBody?.ToString() ?? response?.ReasonPhrase);
-        }
-
-        private static async Task<JsonElement?> ReadResponseBody(HttpResponseMessage? response)
-        {
-            if (response == null || response?.Content == null) return null;
-
-            try
             {
-                string content = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<JsonElement>(content);
+                if (response?.StatusCode == HttpStatusCode.Accepted && response.Headers.Location != null)
+                {
+                    responseBody = GetResponseHeaders<T>(response);
+                }
+
+                return responseBody;
             }
-            catch (Exception) // Response content is not in JSON format
+            else
             {
-                return null;
+                if (response?.StatusCode == HttpStatusCode.Conflict && response.Headers.Location != null)
+                    return GetResponseHeaders<T>(response);
+
+                throw new Exception(responseBody?.ToString() ?? response?.ReasonPhrase);
             }
         }
 
-        private static JsonElement GetResponseHeaders(HttpResponseMessage response)
+        private static async Task<T?> ReadResponseBody<T>(HttpResponseMessage? response)
         {
-            return JsonSerializer.Deserialize<JsonElement>(JsonSerializer.Serialize(response.Headers));
+            if (response != null && response?.Content != null)
+            {
+                try
+                {
+                    string content = await response.Content.ReadAsStringAsync();
+                    return !string.IsNullOrWhiteSpace(content) ? JsonSerializer.Deserialize<T>(content) : default;
+                }
+                catch (Exception) // Response content is not in JSON format
+                {
+                    return default;
+                }
+            }
+
+            return default;
+        }
+
+        private static T? GetResponseHeaders<T>(HttpResponseMessage response)
+        {
+            return JsonSerializer.Deserialize<T>(JsonSerializer.Serialize(response.Headers));
         }
     }
 

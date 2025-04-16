@@ -78,7 +78,7 @@ namespace FunctionApp.SentinelLogging.Services
                 UserAgent = _userAgent
             });
 
-            var response = await _httpService.GetResponseAsync(_uri, Method.Post, headers, body);
+            var response = await _httpService.GetResponseAsync<LogEntry>(_uri, Method.Post, headers, body);
         }
     }
 }
