@@ -31,11 +31,11 @@ namespace FunctionApp.SentinelLogging.Services
             _authService = authService;
             _httpService = httpService;
 
-            var tableName = configuration["LogAnalyticsTableName"] ?? throw new Exception("LogAnalyticsTableName is null");
-            var endpoint = configuration["DataIngestionEndpoint"] ?? throw new Exception("DataIngestionEndpoint is null");
-            var immutableId = configuration["DataCollectionRuleId"] ?? throw new Exception("DataCollectionRuleId is null");
+            var dataSource = configuration["DCR_DataSource"] ?? throw new Exception("DCR_DataSource is null");
+            var endpoint = configuration["DCE_LogsIngestionUrl"] ?? throw new Exception("DCE_LogsIngestionUrl is null");
+            var immutableId = configuration["DCR_ImmutableId"] ?? throw new Exception("DCR_ImmutableId is null");
 
-            _uri = $"{endpoint}/dataCollectionRules/{immutableId}/streams/{tableName}?api-version=2023-01-01";
+            _uri = $"{endpoint}/dataCollectionRules/{immutableId}/streams/{dataSource}?api-version=2023-01-01";
 
             _appId = Debugger.IsAttached ? "00000000-0000-0000-0000-000000000000" : "TODO";
             _region = Debugger.IsAttached ? "West Europe" : "TODO";
@@ -59,26 +59,27 @@ namespace FunctionApp.SentinelLogging.Services
             var headers = new HttpRequestMessage().Headers;
             headers.TryAddWithoutValidation("Authorization", $"Bearer {await _authService.GetAccessTokenAsync("https://monitor.azure.com")}");
 
-            var body = JsonSerializer.Serialize(new LogEntry
-            {
-                Timestamp = DateTime.UtcNow.ToString("o"),
-                AppId = _appId,
-                Region = _region,
-                Geo = _geo,
-                Level = severityLevel.ToString(),
-                Event = eventName,
-                Description = description,
-                HostIp = _hostIp,
-                Port = _port,
-                RequestMethod = _requestMethod,
-                Protocol = _protocol,
-                HostName = _hostName,
-                RequestUri = _requestUri,
-                SourceIp = _sourceIp,
-                UserAgent = _userAgent
+            var body = JsonSerializer.Serialize(new [] { // The API expects an array of log entries
+                new LogEntry
+                {
+                    AppId = _appId,
+                    Region = _region,
+                    Geo = _geo,
+                    Level = severityLevel.ToString(),
+                    Event = eventName,
+                    Description = description,
+                    HostIp = _hostIp,
+                    Port = _port,
+                    RequestMethod = _requestMethod,
+                    Protocol = _protocol,
+                    HostName = _hostName,
+                    RequestUri = _requestUri,
+                    SourceIp = _sourceIp,
+                    UserAgent = _userAgent
+                }
             });
 
-            var response = await _httpService.GetResponseAsync<LogEntry>(_uri, Method.Post, headers, body);
+            await _httpService.GetResponseAsync<object>(_uri, Method.Post, headers, body);
         }
     }
 }

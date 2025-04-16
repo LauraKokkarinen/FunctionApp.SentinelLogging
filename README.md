@@ -34,9 +34,9 @@ Create a new resource group for the resources while adhering to your organizatio
 
    | Name | Value | Description |
    | -- | -- | -- |
-   | LogAnalyticsTableName | Custom-TableName_CL | Your custom log analytics workspace table name. Always starts with Custom- and ends with _CL. |
-   | DataIngestionEndpoint | https://your-dce-xyz.region-1.ingest.monitor.azure.com | Logs Ingestion endpoint URL from the Data Collection Endpoint resource Overview blade. |
-   | DataCollectionRuleId | dcr-immutable-id | Immutable Id from the Data Collection Rule resource Overview blade.|
+   | DCR_DataSource | Custom-TableName_CL | Your custom log analytics workspace table name. Always starts with Custom- and ends with _CL. |
+   | DCE_LogsIngestionUrl | https://your-dce-xyz.region-1.ingest.monitor.azure.com | Logs Ingestion endpoint URL from the Data Collection Endpoint resource Overview blade. |
+   | DCR_ImmutableId | dcr-immutable-id | Immutable Id from the Data Collection Rule resource Overview blade.|
 
 ### Code publishing
 
@@ -60,9 +60,9 @@ For these kinds of quick demo purposes, we can publish the code using publish pr
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
 
-    "LogAnalyticsTableName": "Custom-TableName_CL",
-    "DataIngestionEndpoint": "https://your-dce-xyz.region-1.ingest.monitor.azure.com",
-    "DataCollectionRuleId": "dcr-immutable-id",
+    "DCR_DataSource": "Custom-TableName_CL",
+    "DCE_LogsIngestionUrl": "https://your-dce-xyz.region-1.ingest.monitor.azure.com",
+    "DCR_ImmutableId": "dcr-immutable-id",
 
     "TenantId": "your-tenant-id",
     "ClientId": "your-client-id",
