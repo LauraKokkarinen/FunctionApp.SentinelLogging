@@ -5,7 +5,7 @@ namespace FunctionApp.SentinelLogging.Types
     public class LogEntry
     {
         [JsonPropertyName("timestamp")]
-        public string? Timestamp { get; set; } = DateTime.UtcNow.ToString("o");
+        public DateTime? Timestamp { get; set; } = DateTime.UtcNow;
 
         [JsonPropertyName("appid")]
         public string? AppId { get; set; }
