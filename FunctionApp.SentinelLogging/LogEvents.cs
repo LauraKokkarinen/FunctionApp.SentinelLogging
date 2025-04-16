@@ -125,7 +125,7 @@ namespace FunctionApp.SentinelLogging
             await _logAnalyticsService.LogEventAsync(SeverityLevel.Critical, $"malicious_direct_reference:{userId}", $"User {userId} attempted to access an object to which they are not authorized.");
 
             // Tracking changes to objects to which there are access control restrictions can uncover attempt to escalate privilege on those files by unauthorized users.
-            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"privilege_permissions_changed:{userId}", $"User {userId} changed permissions");
+            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"privilege_permissions_changed:{userId}", $"User {userId} changed permissions.");
 
             // When a user reaches a part of the application out of sequence it may indicate intentional abuse of the business logic and should be tracked.
             await _logAnalyticsService.LogEventAsync(SeverityLevel.Critical, $"sequence_fail:{userId}", $"User {userId} has reached a part of the application out of the normal application flow.");
@@ -143,18 +143,18 @@ namespace FunctionApp.SentinelLogging
             await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sensitive_delete:{userId},{path}", $"User {userId} marked resource at {path} for deletion.");
 
             // Can also be found on identity provider logs (e.g., Microsoft Entra ID)
-            await _logAnalyticsService.LogEventAsync(SeverityLevel.Information, $"session_created:{userId}", $"User {userId} created session");
-            await _logAnalyticsService.LogEventAsync(SeverityLevel.Information, $"session_renewed:{userId}", $"User {userId} renewed session");
-            await _logAnalyticsService.LogEventAsync(SeverityLevel.Information, $"session_expired:{userId}", $"User {userId} session expired");
-            await _logAnalyticsService.LogEventAsync(SeverityLevel.Critical, $"session_use_after_expire:{userId}", $"User {userId} used session after expiration");
+            await _logAnalyticsService.LogEventAsync(SeverityLevel.Information, $"session_created:{userId}", $"User {userId} created session.");
+            await _logAnalyticsService.LogEventAsync(SeverityLevel.Information, $"session_renewed:{userId}", $"User {userId} renewed session.");
+            await _logAnalyticsService.LogEventAsync(SeverityLevel.Information, $"session_expired:{userId}", $"User {userId} session expired.");
+            await _logAnalyticsService.LogEventAsync(SeverityLevel.Critical, $"session_use_after_expire:{userId}", $"User {userId} used session after expiration.");
 
             // Can also be found on cloud service provider logs (e.g., Microsoft Azure)
-            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sys_startup:{userId}", $"User {userId} system startup");
-            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sys_shutdown:{userId}", $"User {userId} system shutdown");
-            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sys_restart:{userId}", $"User {userId} system restart");
-            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sys_crash:{userId}", $"User {userId} system crash");
-            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sys_monitor_disabled:{userId}", $"User {userId} disabled system monitor");
-            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sys_monitor_enabled:{userId}", $"User {userId} enabled system monitor");
+            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sys_startup:{userId}", $"User {userId} system startup.");
+            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sys_shutdown:{userId}", $"User {userId} system shutdown.");
+            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sys_restart:{userId}", $"User {userId} system restart.");
+            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sys_crash:{userId}", $"User {userId} system crash.");
+            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sys_monitor_disabled:{userId}", $"User {userId} disabled system monitor.");
+            await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"sys_monitor_enabled:{userId}", $"User {userId} enabled system monitor.");
 
             // Can also be found on identity provider logs (e.g., Microsoft Entra ID)
             await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"user_created:{userId}", $"User {userId} created user.");
