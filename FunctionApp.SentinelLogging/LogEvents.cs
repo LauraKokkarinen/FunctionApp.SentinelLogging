@@ -34,7 +34,7 @@ namespace FunctionApp.SentinelLogging
                 userId = principal?.Claims?.FirstOrDefault(claim => claim.Type == "oid")?.Value;
             }            
 
-            // Validate and sanitize input to be used in log service initialization at this point
+            // TODO: Validate and sanitize input to be used in log service initialization at this point
 
             _logAnalyticsService.Initialize(hostIp, port, requestMethod, protocol, hostName, requestUri, sourceIp, userAgent); // Could also initialize with userId if desired to be present in all log entries.
 
