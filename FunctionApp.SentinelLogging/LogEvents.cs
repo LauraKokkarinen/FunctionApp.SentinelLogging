@@ -7,6 +7,7 @@ using System.Diagnostics;
 using System.Text.Json;
 using System.Text;
 using FunctionApp.SentinelLogging.Types;
+using FunctionApp.SentinelLogging.Utilities;
 
 namespace FunctionApp.SentinelLogging
 {
@@ -26,19 +27,32 @@ namespace FunctionApp.SentinelLogging
             string sourceIp = req.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
             string userAgent = req.Headers["User-Agent"].ToString();
 
-            var userId = "00000000-0000-0000-0000-000000000000"; // Could also be application identity
+            string? userId = "00000000-0000-0000-0000-000000000000"; // Could also be application identity
 
             if (!Debugger.IsAttached)
             {
                 var principal = JsonSerializer.Deserialize<Principal>(Encoding.UTF8.GetString(Convert.FromBase64String(req.Headers["X-MS-CLIENT-PRINCIPAL"].ToString())));
                 userId = principal?.Claims?.FirstOrDefault(claim => claim.Type == "oid")?.Value;
-            }            
+            }
 
-            // TODO: Validate and sanitize input to be used in log service initialization at this point
+            // Validate and sanitize potentially malicious input to be used in log service initialization at this point
+            if (Validator.IsValidHostName(hostName) && Validator.IsValidIpAddress(hostIp) && Validator.IsValidPort(port) && Validator.IsValidHttpMethod(requestMethod) && Validator.IsValidProtocol(protocol) && Validator.IsValidRequestUri(requestUri) && Validator.IsValidIpAddress(sourceIp) && Validator.IsValidUserAgent(userAgent) && Validator.IsValidUserId(userId))
+            {
+                // Sanitize input to prevent injection attacks
+                hostName = Validator.SanitizeInput(hostName); // While it's validated with IsValidHostName, it should be sanitized to prevent potential log injection attacks.
+                requestUri = Validator.SanitizeInput(requestUri); // Even though it passes validation with IsValidRequestUri, it may still contain special characters that could be interpreted in logs.
+                userAgent = Validator.SanitizeInput(userAgent); // Despite thorough validation with IsValidUserAgent, user agents often contain a variety of characters that could be misinterpreted in logs.
+                sourceIp = Validator.SanitizeInput(sourceIp); // While IP address validation is typically sufficient, sanitizing them ensures no unexpected formats appear in logs.
+                hostIp = Validator.SanitizeInput(hostIp); // While IP address validation is typically sufficient, sanitizing them ensures no unexpected formats appear in logs.
+            }
+            else
+            {
+                return new BadRequestObjectResult("Are you trying to hack me?");
+            }
 
             _logAnalyticsService.Initialize(hostIp, port, requestMethod, protocol, hostName, requestUri, sourceIp, userAgent); // Could also initialize with userId if desired to be present in all log entries.
 
-            // Example values to log
+            // Example values to log. Normally you'd get these in application logic. If received from the client side, should be validated and sanitized.
             var retries = 4;
             var maxlimit = 5;
             var reason = "maxretries";
