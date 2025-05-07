@@ -5,3 +5,6 @@
 /.vs/FunctionApp.SentinelLogging
 /FunctionApp.SentinelLogging/Properties/PublishProfiles
 /.vs/ProjectEvaluation
+
+# Azure Functions localsettings file
+**/local.settings.json
