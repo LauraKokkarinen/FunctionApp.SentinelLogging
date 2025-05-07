@@ -29,7 +29,7 @@ namespace FunctionApp.SentinelLogging
 
             string? userId = "00000000-0000-0000-0000-000000000000"; // Could also be application identity
 
-            if (!Debugger.IsAttached)
+            if (!Debugger.IsAttached && req.Headers.ContainsKey("X-MS-CLIENT-PRINCIPAL"))
             {
                 var principal = JsonSerializer.Deserialize<Principal>(Encoding.UTF8.GetString(Convert.FromBase64String(req.Headers["X-MS-CLIENT-PRINCIPAL"].ToString())));
                 userId = principal?.Claims?.FirstOrDefault(claim => claim.Type == "oid")?.Value;
