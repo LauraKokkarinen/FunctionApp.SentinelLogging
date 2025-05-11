@@ -34,6 +34,7 @@ Create a new resource group for the resources while adhering to your organizatio
 
    | Name | Value | Description |
    | -- | -- | -- |
+   | AppId | App identifier | Included in log entries. |
    | DCR_DataSource | Custom-TableName_CL | Your custom log analytics workspace table name. Always starts with Custom- and ends with _CL. |
    | DCE_LogsIngestionUrl | https://your-dce-xyz.region-1.ingest.monitor.azure.com | Logs Ingestion endpoint URL from the Data Collection Endpoint resource Overview blade. |
    | DCR_ImmutableId | dcr-immutable-id | Immutable Id from the Data Collection Rule resource Overview blade.|

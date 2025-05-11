@@ -49,5 +49,7 @@ namespace FunctionApp.SentinelLogging.Types
         [JsonPropertyName("useragent")]
         public string? UserAgent { get; set; }
 
+        [JsonPropertyName("principalId")]
+        public string? PrincipalId { get; set; }
     }
 }
