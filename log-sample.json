@@ -14,6 +14,7 @@
     "hostname": "azure.functions.com",
     "request_uri": "/api/LogEvent",
     "source_ip": "127.0.0.1",
-    "useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36"
+    "useragent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36",
+    "principal_id": "00000000-0000-0000-0000-000000000000"
   }
 ]
