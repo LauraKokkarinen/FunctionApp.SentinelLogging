@@ -50,7 +50,7 @@ namespace FunctionApp.SentinelLogging
                 return new BadRequestObjectResult("Invalid request parameters.");
             }
 
-            await _logAnalyticsService.Initialize(hostIp, port, requestMethod, protocol, hostName, requestUri, sourceIp, userAgent, principalId); // Could also initialize with userId if desired to be present in all log entries.
+            await _logAnalyticsService.Initialize(hostIp, port, requestMethod, protocol, hostName, requestUri, sourceIp, userAgent, principalId);
 
             // Example values to log. Normally you'd get these in application logic.
             // If received from the client side, should be validated and sanitized before processing and logging.
