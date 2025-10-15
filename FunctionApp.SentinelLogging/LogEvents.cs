@@ -35,22 +35,22 @@ namespace FunctionApp.SentinelLogging
                 principalId = principal?.Claims?.FirstOrDefault(claim => claim.Type == "oid")?.Value;
             }
 
-            // Validate and sanitize potentially malicious input to be used in log service initialization at this point
-            if (Validator.IsValidHostName(hostName) && Validator.IsValidIpAddress(hostIp) && Validator.IsValidPort(port) && Validator.IsValidHttpMethod(requestMethod) && Validator.IsValidProtocol(protocol) && Validator.IsValidRequestUri(requestUri) && Validator.IsValidIpAddress(sourceIp) && Validator.IsValidUserAgent(userAgent) && Validator.IsValidUserId(principalId))
-            {
-                // Sanitize input to prevent injection attacks
-                hostName = Validator.SanitizeInput(hostName); // While it's validated with IsValidHostName, it should be sanitized to prevent potential log injection attacks.
-                requestUri = Validator.SanitizeInput(requestUri); // Even though it passes validation with IsValidRequestUri, it may still contain special characters that could be interpreted in logs.
-                userAgent = Validator.SanitizeInput(userAgent); // Despite thorough validation with IsValidUserAgent, user agents often contain a variety of characters that could be misinterpreted in logs.
-                sourceIp = Validator.SanitizeInput(sourceIp); // While IP address validation is typically sufficient, sanitizing them ensures no unexpected formats appear in logs.
-                hostIp = Validator.SanitizeInput(hostIp); // While IP address validation is typically sufficient, sanitizing them ensures no unexpected formats appear in logs.
-            }
-            else
-            {
-                return new BadRequestObjectResult("Invalid request parameters.");
-            }
+            // Sanitize string type input to prevent log injection attacks
+            hostName = Validator.SanitizeInput(hostName);
+            hostIp = Validator.SanitizeInput(hostIp);
+            requestUri = Validator.SanitizeInput(requestUri);
+            userAgent = Validator.SanitizeInput(userAgent);
+            sourceIp = Validator.SanitizeInput(sourceIp);
 
             await _logAnalyticsService.Initialize(hostIp, port, requestMethod, protocol, hostName, requestUri, sourceIp, userAgent, principalId);
+
+            // Validate input to deduce whether to continue application execution
+            if (!Validator.IsValidHostName(hostName) || !Validator.IsValidIpAddress(hostIp) || !Validator.IsValidPort(port) || !Validator.IsValidHttpMethod(requestMethod) || !Validator.IsValidProtocol(protocol) || !Validator.IsValidRequestUri(requestUri) || !Validator.IsValidIpAddress(sourceIp) || !Validator.IsValidUserAgent(userAgent) || !Validator.IsValidUserId(principalId))
+            {
+                await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"input_validation_fail:{hostName},{hostIp},{port},{requestMethod},{protocol},{requestUri},{sourceIp},{userAgent},{principalId}", $"User submitted data to field {hostName},{hostIp},{port},{requestMethod},{protocol},{requestUri},{sourceIp},{userAgent},{principalId} that failed validation.");
+
+                return new BadRequestObjectResult("Invalid request parameters.");
+            }
 
             // Example values to log. Normally you'd get these in application logic.
             // If received from the client side, should be validated and sanitized before processing and logging.
