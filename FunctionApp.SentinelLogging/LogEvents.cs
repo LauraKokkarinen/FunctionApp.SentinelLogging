@@ -17,6 +17,7 @@ namespace FunctionApp.SentinelLogging
         [Function(nameof(LogEvents))]
         public async Task<IActionResult> RunAsync([HttpTrigger(AuthorizationLevel.Anonymous, "get", "post")] HttpRequest req)
         {
+            // Data coming from the client; used in log entries
             string hostName = req.HttpContext.Request.Host.Host;
             string hostIp = req.HttpContext.Connection.LocalIpAddress?.ToString() ?? "Unknown";
             int port = req.HttpContext.Connection.LocalPort;
@@ -25,9 +26,9 @@ namespace FunctionApp.SentinelLogging
             string requestUri = req.Path.ToString();
             string sourceIp = req.HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Unknown";
             string userAgent = req.Headers["User-Agent"].ToString();
-            string? principalId = null;
 
             // If your Azure app requires authentication, you should include the principalId in the log entries
+            string? principalId = null;
             var authenticatedPrincipal = req.Headers["X-MS-CLIENT-PRINCIPAL"]; // Can be either user or application
             if (authenticatedPrincipal.Count > 0)
             {
@@ -36,18 +37,21 @@ namespace FunctionApp.SentinelLogging
             }
 
             // Sanitize string type input to prevent log injection attacks
-            hostName = Validator.SanitizeInput(hostName);
             hostIp = Validator.SanitizeInput(hostIp);
+            requestMethod = Validator.SanitizeInput(requestMethod);
+            protocol = Validator.SanitizeInput(protocol);
+            hostName = Validator.SanitizeInput(hostName);
             requestUri = Validator.SanitizeInput(requestUri);
-            userAgent = Validator.SanitizeInput(userAgent);
             sourceIp = Validator.SanitizeInput(sourceIp);
+            userAgent = Validator.SanitizeInput(userAgent);
+            principalId = Validator.SanitizeInput(principalId ?? string.Empty);
 
             await _logAnalyticsService.Initialize(hostIp, port, requestMethod, protocol, hostName, requestUri, sourceIp, userAgent, principalId);
 
             // Validate input to deduce whether to continue application execution
             if (!Validator.IsValidHostName(hostName) || !Validator.IsValidIpAddress(hostIp) || !Validator.IsValidPort(port) || !Validator.IsValidHttpMethod(requestMethod) || !Validator.IsValidProtocol(protocol) || !Validator.IsValidRequestUri(requestUri) || !Validator.IsValidIpAddress(sourceIp) || !Validator.IsValidUserAgent(userAgent) || !Validator.IsValidUserId(principalId))
             {
-                await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"input_validation_fail:{hostName},{hostIp},{port},{requestMethod},{protocol},{requestUri},{sourceIp},{userAgent},{principalId}", $"User submitted data to field {hostName},{hostIp},{port},{requestMethod},{protocol},{requestUri},{sourceIp},{userAgent},{principalId} that failed validation.");
+                await _logAnalyticsService.LogEventAsync(SeverityLevel.Warning, $"input_validation_fail:{hostName},{hostIp},{port},{requestMethod},{protocol},{requestUri},{sourceIp},{userAgent},{principalId}", $"Data originating from the client {hostName},{hostIp},{port},{requestMethod},{protocol},{requestUri},{sourceIp},{userAgent},{principalId} failed validation.");
 
                 return new BadRequestObjectResult("Invalid request parameters.");
             }
