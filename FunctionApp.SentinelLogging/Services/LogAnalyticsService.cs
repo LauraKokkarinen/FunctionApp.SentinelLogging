@@ -32,11 +32,11 @@ namespace FunctionApp.SentinelLogging.Services
             _authService = authService;
             _httpService = httpService;
 
-            _appId = configuration["AppId"] ?? throw new Exception("AppId is null");
+            _appId = configuration["AppId"] ?? throw new Exception("AppId is null"); // This app's ID that will be included in log entries
 
-            var endpoint = configuration["DCE_LogsIngestionUrl"] ?? throw new Exception("DCE_LogsIngestionUrl is null");
-            var immutableId = configuration["DCR_ImmutableId"] ?? throw new Exception("DCR_ImmutableId is null");
-            var dataSource = configuration["DCR_DataSource"] ?? throw new Exception("DCR_DataSource is null");
+            var endpoint = configuration["DCE_LogsIngestionUrl"] ?? throw new Exception("DCE_LogsIngestionUrl is null"); // Get this from the Azure data collection endpoint resource
+            var immutableId = configuration["DCR_ImmutableId"] ?? throw new Exception("DCR_ImmutableId is null"); // Get this from the Azure data collection rule resource
+            var dataSource = configuration["DCR_DataSource"] ?? throw new Exception("DCR_DataSource is null"); // Get this from the Azure data collection rule resource
 
             _apiUrl = $"{endpoint}/dataCollectionRules/{immutableId}/streams/{dataSource}?api-version=2023-01-01";
         }
