@@ -2,6 +2,7 @@
 
 namespace FunctionApp.SentinelLogging.Utilities
 {
+    // The validation and sanitization methods in this class are merely examples for simple demonstration purposes. Production code should be more thorough.
     public static class Validator
     {
         public static bool IsValidIpAddress(string ipAddress)
@@ -233,6 +234,7 @@ namespace FunctionApp.SentinelLogging.Utilities
 
         public static string SanitizeInput(string input)
         {
+            // This is only an example
             return input.Replace("<", "").Replace(">", "").Replace("\"", "").Replace("'", "");
         }        
     }
