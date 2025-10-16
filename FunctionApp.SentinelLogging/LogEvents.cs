@@ -46,6 +46,7 @@ namespace FunctionApp.SentinelLogging
             userAgent = Validator.SanitizeInput(userAgent);
             principalId = Validator.SanitizeInput(principalId ?? string.Empty);
 
+            // Initialize the log analytics service we'll be using for logging
             await _logAnalyticsService.Initialize(hostIp, port, requestMethod, protocol, hostName, requestUri, sourceIp, userAgent, principalId);
 
             // Validate input to deduce whether to continue application execution
