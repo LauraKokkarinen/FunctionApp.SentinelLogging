@@ -51,6 +51,7 @@ namespace FunctionApp.SentinelLogging.Services
             _requestUri = requestUri;
             _sourceIp = sourceIp;
             _userAgent = userAgent;
+            _principalId = principalId;
 
             var geolocation = await GetSourceGeolocation(sourceIp);
 
